@@ -3,4 +3,14 @@
     padding: 10px;
     font-size: 16px;
     border: 1px solid red;
+    
+    &--empty {
+        opacity: 0;
+    }
+    
+    &--today {
+        border: 1px solid #579dba;
+        background-color: #579dba;
+        color: #fff !important;
+    }
 }

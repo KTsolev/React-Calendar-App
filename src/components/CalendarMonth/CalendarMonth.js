@@ -1,18 +1,12 @@
 import React from 'react';
 import './CalendarMonth.scss';
 import CalendarDay from '../CalendarDay/CalendarDay';
+import { CalendarContext } from '../CalendarContext/CalendarContext';
 import moment from 'moment';
 
 class CalendarMonth extends React.Component {
-  constructor(props) {
-      super(props);
-      this.state = {
-        toDay: moment()
-      };
-  }  
-  
   firstDayOfMonth() {
-    let firstDay = moment(this.props.dateObject)
+    let firstDay = moment(this.context.toDay)
                     .startOf("month")
                     .format("d"); 
 
@@ -24,7 +18,7 @@ class CalendarMonth extends React.Component {
     
     for (let i = 0; i < Number(this.firstDayOfMonth()); i++) {
       blanks.push(
-        <CalendarDay className="calendarDay calendarDay--empty" key={1} day={""} />
+        <CalendarDay className="calendarDay calendarDay--empty" key={'empty'+i} day={"#"} />
       );
     }
     
@@ -39,9 +33,13 @@ class CalendarMonth extends React.Component {
         fontSize: '16px',
     };
     
-    for (let d = 1; d <= this.props.dateObject.daysInMonth(); d++) {
+    for (let d = 1; d <= this.context.toDay.daysInMonth(); d++) {
       daysInMonth.push(
-        <CalendarDay key={d} style={ black } day={d} />
+        <CalendarDay 
+          key={'day'+d} 
+          className={ Number(d) === Number(this.context.toDay.format('D')) ? 'calendarDay calendarDay--today' : 'calendarDay' } 
+          style={ black } 
+          day={d} />
       );
     }
     
@@ -69,24 +67,22 @@ class CalendarMonth extends React.Component {
       });
       return rows;
   }
-
-  componentWillReceiveProps(nextProps) {
-      if(this.props.dateObject.format('YYYY-MM-DD') !== nextProps.dateObject.format('YYYY-MM-DD')) {
-          this.getTotalDays();
-      }
-  }
   
   render() {
-    let rows = this.getTotalDays();
-    console.log(rows);
-    return <div className="calendarMonth">
+    return <CalendarContext.Consumer>
+      {(context) => {
+       this.context = context;
+       const rows = this.getTotalDays();
+       return <div className="calendarMonth">
             {rows.map(item => {
                 return item.map(d => {
                     return d;
                 })
-                })
+              })
             }
-        </div>;
+        </div>
+      }}
+    </CalendarContext.Consumer>
     }
 }
 
